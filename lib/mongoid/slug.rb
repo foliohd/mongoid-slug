@@ -60,7 +60,7 @@ module Mongoid
         alias_attribute :slugs, :_slugs
 
         unless embedded?
-          if respond_to?(define_slug_index)
+          if respond_to?(:define_slug_index)
             define_slug_index
           else
             if slug_scope
