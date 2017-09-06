@@ -60,21 +60,25 @@ module Mongoid
         alias_attribute :slugs, :_slugs
 
         unless embedded?
-          if slug_scope
-            scope_key = (metadata = self.reflect_on_association(slug_scope)) ? metadata.key : slug_scope
-            if options[:by_model_type] == true
-              # Add _type to the index to fix polymorphism
-              index({ _type: 1, scope_key => 1, _slugs: 1})
-            else
-              index({scope_key => 1, _slugs: 1, del_at: 1}, {unique: true, sparse: true})
-            end
-
+          if respond_to?(define_slug_index)
+            define_slug_index
           else
-            # Add _type to the index to fix polymorphism
-            if options[:by_model_type] == true
-              index({_type: 1, _slugs: 1})
+            if slug_scope
+              scope_key = (metadata = self.reflect_on_association(slug_scope)) ? metadata.key : slug_scope
+              if options[:by_model_type] == true
+                # Add _type to the index to fix polymorphism
+                index({ _type: 1, scope_key => 1, _slugs: 1})
+              else
+                index({scope_key => 1, _slugs: 1, del_at: 1}, {unique: true, sparse: true})
+              end
+
             else
-              index({_slugs: 1}, {unique: true})
+              # Add _type to the index to fix polymorphism
+              if options[:by_model_type] == true
+                index({_type: 1, _slugs: 1})
+              else
+                index({_slugs: 1}, {unique: true})
+              end
             end
           end
         end
