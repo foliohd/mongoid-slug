@@ -60,9 +60,7 @@ module Mongoid
         alias_attribute :slugs, :_slugs
 
         unless embedded?
-          if respond_to?(:define_slug_index)
-            define_slug_index
-          else
+          unless options[:skip_index]
             if slug_scope
               scope_key = (metadata = self.reflect_on_association(slug_scope)) ? metadata.key : slug_scope
               if options[:by_model_type] == true
